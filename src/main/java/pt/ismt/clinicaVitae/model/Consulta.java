@@ -30,8 +30,6 @@ public class Consulta {
     @Column(nullable = false, length = 50)
     private EstadoConsultaEnum estadoConsultaEnum;
 
-    private String receita; // Referência textual conforme seu SQL
-
     @Column(columnDefinition = "TEXT")
     private String notasMedico;
 
@@ -42,6 +40,9 @@ public class Consulta {
     private LocalDate dia;
 
     // --- Relacionamentos (O Coração da Entidade) ---
+
+    @OneToOne(mappedBy = "consulta")
+    private Receita receita;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idPaciente", nullable = false)
