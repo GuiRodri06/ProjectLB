@@ -7,20 +7,17 @@ import pt.ismt.clinicaVitae.model.Receita;
 import pt.ismt.clinicaVitae.model.Recepcionista;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface RecepcionistaRepository extends JpaRepository<Recepcionista, Integer>
-{
-    //------------------------------Procurar--------------------------------//
-    // Procurar pelo ID
-    List<Recepcionista> findById(int id);
-    // Procurar pelo nome
-    List<Recepcionista> findByName(String nome);
-    // Procurar pelo email
-    List<Recepcionista> findByEmail(String email);
-    // Procurar pelo telemovel
-    List<Recepcionista> findByPhoneNumber(String telemovel);
-    // Procurar pela password   --Nao acho que seja para usar--
-    List<Recepcionista> findByPassword(String password);
-    //----------------------------------------------------------------------//
+public interface RecepcionistaRepository extends JpaRepository<Recepcionista, Integer> {
+
+    // Email deve ser único, por isso usamos Optional
+    Optional<Recepcionista> findByEmail(String email);
+
+    // List para nomes, pois pode haver recepcionistas com o mesmo nome
+    List<Recepcionista> findByNomeContainingIgnoreCase(String nome);
+
+    Optional<Recepcionista> findByTelemovel(String telemovel);
+
 }
