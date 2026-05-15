@@ -22,5 +22,5 @@ public interface ConsultaRepository extends JpaRepository<Consulta, Integer> {
     List<Consulta> findByPacienteIdPacienteOrderByDiaDesc(Integer idPaciente);
 
     // 4. Buscar consultas por estado (Ex: AGENDADA, REALIZADA, CANCELADA)
-    List<Consulta> findByEstadoConsulta(EstadoConsultaEnum estadoConsulta);
+    List<Consulta> findByEstadoConsultaEnum(EstadoConsultaEnum estado);
 }
