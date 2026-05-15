@@ -31,21 +31,20 @@ public class RecepcionistaService {
         return repository.findAll();
     }
 
-    // --- BUSCAR POR ID ---
-    public Recepcionista buscarPorId(Integer id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Recepcionista com ID " + id + " não encontrado."));
+    public Optional<Recepcionista> buscarPorId(Integer id) {
+        return repository.findById(id);
     }
 
 
     //DEPOIS ANALISAR ESSE BLOCO
 
-    // --- ATUALIZAR ---
     @Transactional
     public Recepcionista atualizar(Integer id, Recepcionista dadosAtualizados) {
-        Recepcionista recepcionistaExistente = buscarPorId(id);
+        // 1. Extrai a entidade de dentro do Optional (ou lança erro se não existir)
+        Recepcionista recepcionistaExistente = buscarPorId(id)
+                .orElseThrow(() -> new RuntimeException("Recepcionista com ID " + id + " não encontrado."));
 
-        // Atualiza apenas os campos necessários
+        // 2. Agora sim, atualiza os campos na entidade direta
         recepcionistaExistente.setNome(dadosAtualizados.getNome());
         recepcionistaExistente.setEmail(dadosAtualizados.getEmail());
         recepcionistaExistente.setTelemovel(dadosAtualizados.getTelemovel());
@@ -55,6 +54,7 @@ public class RecepcionistaService {
             recepcionistaExistente.setPassword(dadosAtualizados.getPassword());
         }
 
+        // 3. Grava a entidade no repositório
         return repository.save(recepcionistaExistente);
     }
 
