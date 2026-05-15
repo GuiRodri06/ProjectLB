@@ -14,32 +14,32 @@ import java.util.List;
 public class ConsultaController {
 
     @Autowired
-    private ConsultaService service;
+    private ConsultaService consultaService;
 
     // --- AGENDAR CONSULTA (POST) ---
-    @PostMapping("/agendar")
-    public ResponseEntity<?> agendar(@RequestBody Consulta consulta) {
+    @PostMapping("/agendarConsulta")
+    public ResponseEntity<?> agendarConsulta(@RequestBody Consulta consulta) {
         try {
-            Consulta novaConsulta = service.agendar(consulta);
+            Consulta novaConsulta = consultaService.agendar(consulta);
             return new ResponseEntity<>(novaConsulta, HttpStatus.CREATED);
         } catch (RuntimeException e) {
-            // Se o service lançar um erro (ex: médico ocupado), pegamos a mensagem aqui
+            // Se o consultaService lançar um erro (ex: médico ocupado), pegamos a mensagem aqui
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     // --- LISTAR TODAS (GET) ---
     @GetMapping
-    public ResponseEntity<List<Consulta>> listarTodas() {
-        List<Consulta> lista = service.listarTodas();
+    public ResponseEntity<List<Consulta>> listarTodasConsultas() {
+        List<Consulta> lista = consultaService.listarTodas();
         return ResponseEntity.ok(lista);
     }
 
     // --- CANCELAR CONSULTA (DELETE) ---
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> cancelar(@PathVariable Integer id) {
+    public ResponseEntity<String> cancelarConsulta(@PathVariable Integer id) {
         try {
-            service.cancelar(id);
+            consultaService.cancelar(id);
             return ResponseEntity.ok("Consulta cancelada com sucesso.");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
