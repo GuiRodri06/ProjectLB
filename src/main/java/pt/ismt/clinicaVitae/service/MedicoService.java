@@ -2,9 +2,12 @@ package pt.ismt.clinicaVitae.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pt.ismt.clinicaVitae.model.Medico;
+import pt.ismt.clinicaVitae.model.Recepcionista;
 import pt.ismt.clinicaVitae.repository.MedicoRepository;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MedicoService {
@@ -24,8 +27,16 @@ public class MedicoService {
         return medicoRepository.findAll();
     }
 
-    public Medico buscarPorId(Integer id) {
-        return medicoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Médico não encontrado!"));
+    public Optional<Medico> buscarPorId(Integer id) {
+        return medicoRepository.findById(id);
+    }
+
+    // --- FUNÇÃO DE DELETE (APAGAR) ---
+    @Transactional
+    public void excluir(Integer id) {
+        if (!medicoRepository.existsById(id)) {
+            throw new RuntimeException("Paciente não encontrado para exclusão!");
+        }
+        medicoRepository.deleteById(id);
     }
 }
