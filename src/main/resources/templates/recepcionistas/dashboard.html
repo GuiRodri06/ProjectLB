@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Receção | Clinica Vitae</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root { --primary: #1e293b; --accent: #0ea5e9; --bg: #f1f5f9; --white: #ffffff; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); display: flex; margin: 0; }
+
+        /* SIDEBAR */
+        nav { width: 260px; background: var(--primary); height: 100vh; color: white; padding: 20px; position: fixed; }
+        .menu-item { padding: 15px; color: #94a3b8; display: block; text-decoration: none; border-radius: 8px; margin-bottom: 5px; }
+        .menu-item:hover { background: #334155; color: white; }
+
+        /* MAIN */
+        main { margin-left: 260px; padding: 40px; width: 100%; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 25px; }
+
+        /* BUTTONS */
+        .btn-add { background: var(--accent); color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: inline-block; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { text-align: left; padding: 12px; border-bottom: 1px solid #e2e8f0; }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <h2 style="margin-bottom: 30px;"><i class="fa-solid fa-hospital-user"></i> Vitae Receção</h2>
+    <a href="#" class="menu-item"><i class="fa-solid fa-calendar-plus"></i> Agendar Consulta</a>
+    <a href="#" class="menu-item"><i class="fa-solid fa-users"></i> Gerir Pacientes</a>
+    <a href="/login" style="margin-top: 50px; color: #f87171;" class="menu-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
+</nav>
+
+<main>
+    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <h1>Bem-vindo, Recepcionista</h1>
+            <p>Gestão de agendamentos diários</p>
+        </div>
+        <a href="#" class="btn-add">+ Novo Agendamento</a>
+    </header>
+
+    <div class="card">
+        <h3>Consultas para Hoje</h3>
+        <table>
+            <thead>
+            <tr><th>Paciente</th><th>Médico</th><th>Hora</th><th>Ação</th></tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Ana Souza</td>
+                <td>Dr. Carlos</td>
+                <td>09:00</td>
+                <td><button style="border:none; cursor:pointer; color: var(--accent);">Editar</button></td>
+            </tr>
+            <tr>
+                <td>Bruno Lima</td>
+                <td>Dra. Beatriz</td>
+                <td>10:30</td>
+                <td><button style="border:none; cursor:pointer; color: var(--accent);">Editar</button></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+</body>
+</html>
