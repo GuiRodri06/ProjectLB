@@ -1,6 +1,7 @@
 package pt.ismt.clinicaVitae.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ismt.clinicaVitae.model.Recepcionista;
@@ -14,15 +15,16 @@ public class RecepcionistaService {
 
     @Autowired
     private RecepcionistaRepository repository;
+    @Autowired
+    private PasswordEncoder passwordEncoder; // Injeção importante
 
-    // --- CRIAR / SALVAR ---
     @Transactional
     public Recepcionista salvar(Recepcionista recepcionista) {
-        // Validação: Não permitir dois funcionários com o mesmo e-mail
-        Optional<Recepcionista> existente = repository.findByEmail(recepcionista.getEmail());
-        if (existente.isPresent()) {
-            throw new RuntimeException("Este e-mail já está cadastrado para outro recepcionista!");
+        if (repository.findByEmail(recepcionista.getEmail()).isPresent()) {
+            throw new RuntimeException("Este e-mail já está cadastrado!");
         }
+        // Criptografa a senha antes de salvar
+        recepcionista.setPassword(passwordEncoder.encode(recepcionista.getPassword()));
         return repository.save(recepcionista);
     }
 
@@ -40,22 +42,19 @@ public class RecepcionistaService {
 
     @Transactional
     public Recepcionista atualizar(Integer id, Recepcionista dadosAtualizados) {
-        // 1. Extrai a entidade de dentro do Optional (ou lança erro se não existir)
-        Recepcionista recepcionistaExistente = buscarPorId(id)
-                .orElseThrow(() -> new RuntimeException("Recepcionista com ID " + id + " não encontrado."));
+        Recepcionista r = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Recepcionista não encontrado."));
 
-        // 2. Agora sim, atualiza os campos na entidade direta
-        recepcionistaExistente.setNome(dadosAtualizados.getNome());
-        recepcionistaExistente.setEmail(dadosAtualizados.getEmail());
-        recepcionistaExistente.setTelemovel(dadosAtualizados.getTelemovel());
+        r.setNome(dadosAtualizados.getNome());
+        r.setEmail(dadosAtualizados.getEmail());
+        r.setTelemovel(dadosAtualizados.getTelemovel());
 
-        // Se a senha não for nula nem vazia, atualiza também
+        // Se uma nova senha foi enviada, criptografe-a antes de atualizar
         if (dadosAtualizados.getPassword() != null && !dadosAtualizados.getPassword().isEmpty()) {
-            recepcionistaExistente.setPassword(dadosAtualizados.getPassword());
+            r.setPassword(passwordEncoder.encode(dadosAtualizados.getPassword()));
         }
 
-        // 3. Grava a entidade no repositório
-        return repository.save(recepcionistaExistente);
+        return repository.save(r);
     }
 
     // --- EXCLUIR ---
