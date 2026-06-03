@@ -27,4 +27,11 @@ public class RecepcionistaController {
         model.addAttribute("consultas", consultasDeHoje);
         return "recepcionistas/dashboard";
     }
+
+    // --- ROTAS DE API (REST) CONTINUAM IGUAIS ---
+    @PostMapping(consumes = "application/json")
+    @ResponseBody
+    public Recepcionista cadastrar(@RequestBody Recepcionista recepcionista) {
+        return recepcionistaService.salvar(recepcionista);
+    }
 }

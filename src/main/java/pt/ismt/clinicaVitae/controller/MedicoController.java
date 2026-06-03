@@ -38,12 +38,6 @@ public class MedicoController {
     }
 
     // --- ROTAS DE API (REST) CONTINUAM IGUAIS ---
-    @GetMapping(produces = "application/json")
-    @ResponseBody
-    public List<Medico> listar() {
-        return serviceMedico.listarTodos();
-    }
-
     @PostMapping(consumes = "application/json")
     @ResponseBody
     public Medico cadastrar(@RequestBody Medico medico) {
