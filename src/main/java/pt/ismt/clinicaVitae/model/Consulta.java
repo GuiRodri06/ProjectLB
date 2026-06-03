@@ -2,6 +2,7 @@ package pt.ismt.clinicaVitae.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import pt.ismt.clinicaVitae.model.enums.CategoriaEnum;
 import pt.ismt.clinicaVitae.model.enums.EstadoConsultaEnum;
 
 import java.time.LocalDate;
@@ -20,8 +21,9 @@ public class Consulta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idConsulta;
 
-    @Column(nullable = false, length = 100)
-    private String categoria;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    private CategoriaEnum categoria; // Mudou de String para CategoriaEnum
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String descricao;

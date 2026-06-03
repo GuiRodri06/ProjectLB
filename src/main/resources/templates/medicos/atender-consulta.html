@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Atendimento Clínico | Clínica Vitae</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e293b;
+            --accent: #0ea5e9;
+            --success: #10b981;
+            --bg: #f1f5f9;
+            --border: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); padding: 30px; color: #334155; }
+
+        .header-atendimento {
+            max-width: 1300px;
+            margin: 0 auto 25px auto;
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid var(--accent);
+        }
+
+        .grid-atendimento {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 30px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        label { display: block; font-size: 14px; font-weight: 600; color: #475569; margin: 20px 0 8px 0; }
+        textarea, input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: #0284c7; }
+        .btn-danger { background: #fee2e2; color: #ef4444; padding: 8px; border-radius: 8px; }
+        .btn-danger:hover { background: #fca5a5; color: #b91c1c; }
+
+        .med-table { width: 100%; border-collapse: collapse; margin-top: 20px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .med-table th, .med-table td { padding: 14px; text-align: left; font-size: 14px; }
+        .med-table th { background: #f8fafc; color: #64748b; font-weight: 600; border-bottom: 2px solid var(--border); }
+        .med-table td { border-bottom: 1px solid var(--border); background: white; }
+        .med-table tr:last-child td { border-bottom: none; }
+
+        .form-med-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="header-atendimento">
+    <div class="paciente-info">
+        <h1 style="font-size: 22px; color: var(--primary);"><i class="fa-solid fa-user-doctor"></i> Consulta em Curso</h1>
+        <p style="margin-top: 5px;"><strong>Paciente:</strong> <span th:text="${consulta.paciente.nome}"></span> (CC: <span th:text="${consulta.paciente.cartaoCidadao}"></span>)</p>
+    </div>
+    <div>
+        <span style="background: #e0f2fe; color: #0369a1; padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 14px;" th:text="${consulta.categoria.descricao}"></span>
+    </div>
+</div>
+
+<div class="grid-atendimento">
+
+    <div class="card">
+        <h2><i class="fa-solid fa-file-medical" style="color: #0ea5e9;"></i> Prontuário Clínico</h2>
+
+        <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+            <strong>Sintomas / Motivo da Queixa:</strong>
+            <p th:text="${consulta.descricao}" style="margin-top: 5px; color: #475569; font-size: 14px;"></p>
+        </div>
+
+        <form th:action="@{/consultas/salvar-prontuario/{id}(id=${consulta.idConsulta})}" method="POST">
+            <label for="notasMedico">Observações Clínicas e Diagnóstico</label>
+            <textarea id="notasMedico" name="notasMedico" rows="12" th:text="${consulta.notasMedico}" placeholder="Comece a digitar o histórico do exame físico, hipóteses de diagnóstico e evolução clínica..." required></textarea>
+
+            <label for="estadoConsulta">Encaminhamento / Estado da Consulta</label>
+            <select id="estadoConsulta" name="estadoConsulta" required>
+                <option value="REALIZADA">Finalizar Consulta (Marcar como Realizada)</option>
+                <option value="AGENDADA">Manter em Aberto / Remarcar</option>
+            </select>
+
+            <div style="margin-top: 25px; display: flex; justify-content: flex-end;">
+                <button type="submit" class="btn btn-success"><i class="fa-solid fa-floppy-disk"></i> Gravar Prontuário e Finalizar</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2><i class="fa-solid fa-prescription-bottle-medical" style="color: #f59e0b;"></i> Receita Médica</h2>
+
+        <div th:if="${receita == null}" style="text-align: center; padding: 30px 10px;">
+            <p style="color: #64748b; margin-bottom: 20px;">Nenhuma receita associada a este atendimento até ao momento.</p>
+
+            <form id="formCriarReceita" th:action="@{/consultas/atender/{id}/criar-receita(id=${consulta.idConsulta})}" method="POST">
+                <input type="hidden" name="observacoes" value="Emitido na consulta.">
+                <input type="hidden" name="notasTemporarias" id="notasTemp1">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Iniciar Nova Receita</button>
+            </form>
+        </div>
+
+        <div th:if="${receita != null}">
+
+            <form id="formAdicionarItem" th:action="@{/consultas/atender/{idC}/receita/{idR}/adicionar-item(idC=${consulta.idConsulta}, idR=${receita.idReceita})}" method="POST" style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px dashed var(--border);">
+                <strong style="font-size: 14px; color: var(--primary); display:block; margin-bottom: 10px;">Adicionar Produto/Medicamento</strong>
+
+                <div class="form-med-row">
+                    <input type="text" name="nomeProduto" placeholder="Nome do Medicamento (ex: Paracetamol)" required>
+                    <input type="text" name="dosagem" placeholder="Dosagem (ex: 1000mg / 20 comprimidos)" required>
+                </div>
+
+                <div style="margin-bottom: 10px;">
+                    <textarea name="instrucoes_consumo" rows="2" placeholder="Instruções de Toma (ex: Tomar 1 de 8 em 8 horas em caso de dor)" required></textarea>
+                </div>
+
+                <input type="hidden" name="notasTemporarias" id="notasTemp2">
+                <button type="submit" class="btn btn-primary" style="padding: 8px 15px; font-size: 13px;"><i class="fa-solid fa-plus"></i> Adicionar à Receita</button>
+            </form>
+
+            <h3 style="font-size: 15px; margin-top: 25px; color: #334155;">Medicamentos Prescritos:</h3>
+
+            <div th:if="${#lists.isEmpty(itens)}" style="color: #94a3b8; font-size: 14px; margin-top: 10px; font-style: italic;">
+                Nenhum medicamento adicionado ainda.
+            </div>
+
+            <table th:if="${!#lists.isEmpty(itens)}" class="med-table">
+                <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Dosagem</th>
+                    <th>Instruções</th>
+                    <th>Ação</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${itens}">
+                    <td th:text="${item.nomeProduto}" style="font-weight: 600; color: var(--primary);"></td>
+                    <td th:text="${item.dosagem}"></td>
+                    <td th:text="${item.instrucoes_consumo}" style="color: #475569;"></td>
+                    <td>
+                        <a th:href="@{/consultas/atender/{idC}/receita/remover-item/{idI}(idC=${consulta.idConsulta}, idI=${item.idReceitaItem})}" class="btn btn-danger" title="Remover"><i class="fa-solid fa-trash"></i></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function prenderNotasAoSubmeter(formId, inputOcultoId) {
+        let form = document.getElementById(formId);
+        if (form) {
+            form.addEventListener('submit', function() {
+                let txtProntuario = document.getElementById('notasMedico').value;
+                document.getElementById(inputOcultoId).value = txtProntuario;
+            });
+        }
+    }
+    // Vincula a cópia do texto aos dois formulários da coluna da receita
+    prenderNotasAoSubmeter('formCriarReceita', 'notasTemp1');
+    prenderNotasAoSubmeter('formAdicionarItem', 'notasTemp2');
+</script>
+
+</body>
+</html>

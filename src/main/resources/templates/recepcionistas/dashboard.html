@@ -2,71 +2,259 @@
 <html lang="pt-pt" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard Receção | Clinica Vitae</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Painel da Receção | Clínica Vitae</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        :root { --primary: #1e293b; --accent: #0ea5e9; --bg: #f1f5f9; --white: #ffffff; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); display: flex; margin: 0; }
+        :root {
+            --primary: #0f172a;
+            --accent: #6366f1;
+            --bg: #f1f5f9;
+            --border: #e2e8f0;
+            --text-main: #334155;
+            --text-sub: #64748b;
+        }
 
-        /* SIDEBAR */
-        nav { width: 260px; background: var(--primary); height: 100vh; color: white; padding: 20px; position: fixed; }
-        .menu-item { padding: 15px; color: #94a3b8; display: block; text-decoration: none; border-radius: 8px; margin-bottom: 5px; }
-        .menu-item:hover { background: #334155; color: white; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); padding: 30px; color: var(--text-main); }
 
-        /* MAIN */
-        main { margin-left: 260px; padding: 40px; width: 100%; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .container { max-width: 1400px; margin: auto; }
 
-        /* BUTTONS */
-        .btn-add { background: var(--accent); color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; display: inline-block; }
+        /* Header */
+        .welcome-box {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 4px solid var(--accent);
+        }
+        .welcome-title h1 { color: var(--primary); font-size: 22px; font-weight: 700; }
+        .welcome-title p { color: var(--text-sub); font-size: 14px; margin-top: 4px; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { text-align: left; padding: 12px; border-bottom: 1px solid #e2e8f0; }
-        td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
+        /* Barra de Ações do Cabeçalho */
+        .header-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
+        .btn-nova-consulta {
+            background: var(--accent);
+            color: white;
+            padding: 11px 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn-nova-consulta:hover { background: #4f46e5; transform: translateY(-1px); }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 11px 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover { background: #e2e8f0; color: var(--primary); }
+
+        .btn-danger {
+            background: #fef2f2;
+            color: #ef4444;
+            padding: 11px 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            border: 1px solid #fee2e2;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+        }
+        .btn-danger:hover { background: #fee2e2; color: #b91c1c; }
+
+        /* Tabela da Agenda */
+        .main-card {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04);
+        }
+        .main-card h2 { font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 20px; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 16px; text-align: left; font-size: 14px; }
+        th { background: #f8fafc; color: var(--text-sub); font-weight: 600; border-bottom: 2px solid var(--border); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+        td { border-bottom: 1px solid var(--border); vertical-align: middle; }
+        tr:hover td { background-color: #f8fafc; }
+
+        /* Badges de Categoria */
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+        .badge-rotina { background: #f0fdf4; color: #16a34a; }
+        .badge-checkup { background: #eff6ff; color: #2563eb; }
+        .badge-urgencia { background: #fef2f2; color: #dc2626; }
+        .badge-retorno { background: #fff7ed; color: #d97706; }
+
+        /* Badges de Status */
+        .badge-status { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+        .badge-agendada { background: #eff6ff; color: #2563eb; }
+        .badge-realizada { background: #f0fdf4; color: #16a34a; }
+        .badge-cancelada { background: #fef2f2; color: #dc2626; }
+        .badge-desmarcada { background: #fef3c7; color: #92400e; }
+
+        /* Links de Ações na Tabela */
+        .action-links { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-table {
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+        .btn-edit { background: #f1f5f9; color: #475569; }
+        .btn-edit:hover { background: #e2e8f0; color: #1e293b; }
+        .btn-cancel { background: #fef2f2; color: #ef4444; }
+        .btn-cancel:hover { background: #fee2e2; color: #b91c1c; }
+
+        .no-data { text-align: center; padding: 40px; color: var(--text-sub); }
+        .no-data i { font-size: 36px; color: #cbd5e1; margin-bottom: 10px; display: block; }
+
+        /* Responsividade */
+        @media (max-width: 1200px) {
+            .container { max-width: 100%; }
+            table { font-size: 12px; }
+            th, td { padding: 12px; }
+        }
     </style>
 </head>
 <body>
 
-<nav>
-    <h2 style="margin-bottom: 30px;"><i class="fa-solid fa-hospital-user"></i> Vitae Receção</h2>
-    <a href="#" class="menu-item"><i class="fa-solid fa-calendar-plus"></i> Agendar Consulta</a>
-    <a href="#" class="menu-item"><i class="fa-solid fa-users"></i> Gerir Pacientes</a>
-    <a href="/login" style="margin-top: 50px; color: #f87171;" class="menu-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
-</nav>
+<div class="container">
 
-<main>
-    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <div>
-            <h1>Bem-vindo, Recepcionista</h1>
-            <p>Gestão de agendamentos diários</p>
+    <div class="welcome-box">
+        <div class="welcome-title">
+            <h1>Painel de Controlo da Receção</h1>
+            <p><i class="fa-regular fa-clock"></i> Gestão de fluxo de pacientes em tempo real</p>
         </div>
-        <a href="#" class="btn-add">+ Novo Agendamento</a>
-    </header>
 
-    <div class="card">
-        <h3>Consultas para Hoje</h3>
-        <table>
+        <div class="header-actions">
+
+            <a th:href="@{/pacientes/novo}" class="btn-nova-consulta">
+                <i class="fa-solid fa-user-plus"></i> Criar Paciente
+            </a>
+
+            <a th:href="@{/consultas/nova}" class="btn-nova-consulta">
+                <i class="fa-solid fa-calendar-plus"></i> Marcar Consulta
+            </a>
+
+            <a th:href="@{/historico/pacientes}" class="btn-secondary">
+                <i class="fa-solid fa-box-archive"></i> Arquivo Geral
+            </a>
+
+            <a th:href="@{/}" class="btn-danger" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-right-from-bracket"></i> Sair
+            </a>
+        </div>
+    </div>
+
+    <div class="main-card">
+        <h2><i class="fa-solid fa-calendar-day"></i> Consultas Agendadas para Hoje</h2>
+
+        <div th:if="${#lists.isEmpty(consultas)}" class="no-data">
+            <i class="fa-regular fa-calendar-times"></i>
+            <p>Nenhuma consulta marcada para o dia de hoje.</p>
+        </div>
+
+        <table th:if="${!#lists.isEmpty(consultas)}">
             <thead>
-            <tr><th>Paciente</th><th>Médico</th><th>Hora</th><th>Ação</th></tr>
+            <tr>
+                <th style="width: 8%">Horário</th>
+                <th style="width: 6%">Data</th>
+                <th style="width: 22%">Paciente</th>
+                <th style="width: 22%">Médico / Especialidade</th>
+                <th style="width: 12%">Categoria</th>
+                <th style="width: 12%">Status</th>
+                <th style="width: 18%">Ações de Gestão</th>
+            </tr>
             </thead>
             <tbody>
-            <tr>
-                <td>Ana Souza</td>
-                <td>Dr. Carlos</td>
-                <td>09:00</td>
-                <td><button style="border:none; cursor:pointer; color: var(--accent);">Editar</button></td>
-            </tr>
-            <tr>
-                <td>Bruno Lima</td>
-                <td>Dra. Beatriz</td>
-                <td>10:30</td>
-                <td><button style="border:none; cursor:pointer; color: var(--accent);">Editar</button></td>
+            <tr th:each="c : ${consultas}">
+                <!-- Horário -->
+                <td th:text="${c.hora}" style="font-weight: 700; color: var(--primary);"></td>
+
+                <!-- Data -->
+                <td th:text="${#temporals.format(c.dia, 'dd/MM/yyyy')}" style="font-weight: 500;"></td>
+
+                <!-- Paciente -->
+                <td>
+                    <div th:text="${c.paciente.nome}" style="font-weight: 500;"></div>
+                    <div th:text="'CC: ' + ${c.paciente.cartaoCidadao}" style="font-size: 12px; color: var(--text-sub); margin-top: 2px;"></div>
+                </td>
+
+                <!-- Médico / Especialidade -->
+                <td>
+                    <div th:text="'Dr(a). ' + ${c.medico.nome}" style="font-weight: 500; color: #475569;"></div>
+                    <div th:text="${c.medico.especialidade}" style="font-size: 12px; color: var(--text-sub);"></div>
+                </td>
+
+                <!-- Categoria -->
+                <td>
+                    <span th:class="'badge ' +
+                                  (${c.categoria.name() == 'ROTINA'} ? 'badge-rotina' :
+                                  (${c.categoria.name() == 'CHECK_UP'} ? 'badge-checkup' :
+                                  (${c.categoria.name() == 'URGENCIA'} ? 'badge-urgencia' : 'badge-retorno')))"
+                          th:text="${c.categoria.descricao}">
+                    </span>
+                </td>
+
+                <!-- Status -->
+                <td>
+                    <span th:class="'badge-status ' +
+                                  (${c.estadoConsultaEnum.name() == 'AGENDADA'} ? 'badge-agendada' :
+                                  (${c.estadoConsultaEnum.name() == 'REALIZADA'} ? 'badge-realizada' :
+                                  (${c.estadoConsultaEnum.name() == 'CANCELADA'} ? 'badge-cancelada' : 'badge-desmarcada')))"
+                          th:text="${c.estadoConsultaEnum.name()}">
+                    </span>
+                </td>
+
+                <!-- Ações -->
+                <td>
+                    <div class="action-links">
+                        <a th:href="@{/consultas/editar/{id}(id=${c.idConsulta})}" class="btn-table btn-edit">
+                            <i class="fa-regular fa-pen-to-square"></i> Alterar
+                        </a>
+
+                        <!-- LINK SIMPLES COM GET -->
+                        <a th:href="@{/consultas/cancelar/{id}(id=${c.idConsulta})}"
+                           class="btn-table btn-cancel"
+                           onclick="return confirm('Tem a certeza que deseja cancelar esta consulta?');">
+                            <i class="fa-solid fa-ban"></i> Cancelar
+                        </a>
+                    </div>
+                </td>
             </tr>
             </tbody>
         </table>
     </div>
-</main>
+</div>
 
 </body>
 </html>

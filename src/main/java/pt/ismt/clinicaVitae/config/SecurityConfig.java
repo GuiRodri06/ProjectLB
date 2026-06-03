@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // JWT é stateless
                 .authorizeHttpRequests(auth -> auth
                         // 1. Recursos públicos (Login e assets)
-                        .requestMatchers("/", "/login", "/css/**", "/js/**", "/error").permitAll()
+                        .requestMatchers("/", "/login","/logout", "/css/**", "/js/**", "/error").permitAll()
 
                         // 2. Abertura para cadastro (se precisar de rota pública para criar)
                         .requestMatchers(HttpMethod.POST, "/medicos", "/recepcionistas").permitAll()
