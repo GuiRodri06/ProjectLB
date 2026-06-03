@@ -12,15 +12,15 @@ import java.util.List;
 @Repository
 public interface ConsultaRepository extends JpaRepository<Consulta, Integer> {
 
-    // 1. Verificação de conflito de horário (A peça chave do seu Service)
     boolean existsByMedicoIdMedicoAndDiaAndHora(Integer idMedico, LocalDate dia, LocalTime hora);
 
-    // 2. Buscar a agenda de um médico para um dia específico
-    List<Consulta> findByMedicoIdMedicoAndDiaOrderByHoraAsc(Integer idMedico, LocalDate dia);
+    // Para o Dashboard do Médico
+    List<Consulta> findByMedicoIdMedicoAndDiaAndEstadoConsultaEnumOrderByHoraAsc(Integer idMedico, LocalDate dia, EstadoConsultaEnum estado);
 
-    // 3. Buscar todo o histórico de um paciente
-    List<Consulta> findByPacienteIdPacienteOrderByDiaDesc(Integer idPaciente);
+    // Para o Dashboard da Rececionista
+    List<Consulta> findByDiaOrderByHoraAsc(LocalDate dia);
 
-    // 4. Buscar consultas por estado (Ex: AGENDADA, REALIZADA, CANCELADA)
-    List<Consulta> findByEstadoConsultaEnum(EstadoConsultaEnum estado);
+    List<Consulta> findByPacienteIdPacienteAndEstadoConsultaEnumOrderByDiaDescHoraDesc(Integer idPaciente, EstadoConsultaEnum estado);
+
+    List<Consulta> findByPacienteIdPacienteAndEstadoConsultaEnum(Integer idPaciente, EstadoConsultaEnum estado);
 }

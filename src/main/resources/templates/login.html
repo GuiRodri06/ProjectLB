@@ -1,25 +1,373 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-pt" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Clínica Vitae</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; }
-        .login-box { border: 1px solid #ccc; padding: 20px; border-radius: 8px; box-shadow: 2px 2px 10px #eee; }
-        input { display: block; margin: 10px 0; padding: 8px; width: 250px; }
-        button { padding: 10px 20px; cursor: pointer; }
-        .erro { color: red; }
+        :root {
+            --primary: #0f172a;
+            --accent: #6366f1;
+            --accent-dark: #4f46e5;
+            --bg: #f1f5f9;
+            --border: #e2e8f0;
+            --text-main: #334155;
+            --text-sub: #64748b;
+            --success: #10b981;
+            --error: #ef4444;
+            --error-light: #fee2e2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, #1e293b 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+        }
+
+        /* Background Pattern */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 50%;
+            top: -100px;
+            left: -100px;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(99, 102, 241, 0.08);
+            border-radius: 50%;
+            bottom: -50px;
+            right: -50px;
+            z-index: 0;
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+
+        /* Logo e Branding */
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        .logo-icon i {
+            color: white;
+            font-size: 28px;
+        }
+
+        .login-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Card Principal */
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Formulário */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 14px;
+            color: var(--text-sub);
+            font-size: 18px;
+            pointer-events: none;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 12px 12px 44px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--text-main);
+            transition: all 0.3s ease;
+            background-color: #ffffff;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background-color: #f8fafc;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-sub);
+        }
+
+        /* Botão Entrar */
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .btn-login i {
+            font-size: 16px;
+        }
+
+        /* Mensagem de Erro */
+        .alert-error {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            background-color: var(--error-light);
+            border: 1px solid #fca5a5;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            animation: shake 0.4s ease-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .alert-error i {
+            color: var(--error);
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .alert-error p {
+            color: #b91c1c;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        /* Links Adicionais */
+        .login-footer {
+            margin-top: 24px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-sub);
+        }
+
+        .login-footer a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .login-footer a:hover {
+            color: var(--accent-dark);
+        }
+
+        /* Responsividade */
+        @media (max-width: 480px) {
+            .login-container {
+                max-width: 100%;
+                padding: 16px;
+            }
+
+            .login-card {
+                padding: 30px 20px;
+                border-radius: 16px;
+            }
+
+            .login-header h1 {
+                font-size: 24px;
+            }
+
+            .login-header {
+                margin-bottom: 30px;
+            }
+
+            .form-group {
+                gap: 6px;
+            }
+
+            .login-form {
+                gap: 16px;
+            }
+        }
+
+        /* Modo escuro - opcional */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+            }
+        }
     </style>
 </head>
 <body>
-<div class="login-box">
-    <h2>Clínica Vitae</h2>
-    <form th:action="@{/login}" method="post">
-        <input type="email" name="email" placeholder="Seu e-mail" required>
-        <input type="password" name="password" placeholder="Sua senha" required>
-        <button type="submit">Entrar</button>
-    </form>
-    <p th:if="${param.erro}" class="erro">E-mail ou senha inválidos!</p>
+
+<div class="login-container">
+    <!-- Logo e Branding -->
+    <div class="login-header">
+        <div class="logo-icon">
+            <i class="fa-solid fa-hospital"></i>
+        </div>
+        <h1>Clínica Vitae</h1>
+        <p>Sistema de Gestão Clínica</p>
+    </div>
+
+    <!-- Card de Login -->
+    <div class="login-card">
+        <!-- Mensagem de Erro (se houver) -->
+        <div th:if="${param.erro}" class="alert-error">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <p>E-mail ou senha inválidos. Tente novamente.</p>
+        </div>
+
+        <!-- Formulário -->
+        <form th:action="@{/login}" method="post" class="login-form">
+            <!-- Email -->
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="seu.email@clinica.pt"
+                            required
+                            autofocus>
+                </div>
+            </div>
+
+            <!-- Senha -->
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="••••••••"
+                            required>
+                </div>
+            </div>
+
+            <!-- Botão Entrar -->
+            <button type="submit" class="btn-login">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                Entrar
+            </button>
+        </form>
+
+        <!-- Rodapé -->
+        <div class="login-footer">
+            <p>© 2026 Clínica Vitae. Todos os direitos reservados.</p>
+        </div>
+    </div>
 </div>
+
 </body>
 </html>

@@ -4,10 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ismt.clinicaVitae.model.Consulta;
+import pt.ismt.clinicaVitae.model.Paciente;
+import pt.ismt.clinicaVitae.model.enums.EstadoConsultaEnum;
 import pt.ismt.clinicaVitae.repository.ConsultaRepository;
 import pt.ismt.clinicaVitae.repository.MedicoRepository;
 import pt.ismt.clinicaVitae.repository.PacienteRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -50,17 +53,80 @@ public class ConsultaService {
         return consultaRepository.save(consulta);
     }
 
-    // --- LISTAR AGENDA ---
+    // --- LISTAR AGENDA GERAL ---
     public List<Consulta> listarTodas() {
         return consultaRepository.findAll();
     }
 
-    // --- CANCELAR ---
+    // --- BUSCAR UMA CONSULTA POR ID ---
+    public Consulta buscarPorId(Integer id) {
+        return consultaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Erro: Consulta com o ID " + id + " não foi encontrada."));
+    }
+
+    // --- CANCELAR (CORRIGIDO: Transforma a exclusão física em lógica) ---
     @Transactional
     public void cancelar(Integer id) {
-        if (!consultaRepository.existsById(id)) {
-            throw new RuntimeException("Erro: Consulta não encontrada.");
-        }
-        consultaRepository.deleteById(id);
+        Consulta consulta = consultaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Erro: Consulta não encontrada para cancelamento."));
+
+        // Em vez de deleteById, mudamos o estado. O histórico fica salvo e os erros de FK somem!
+        consulta.setEstadoConsultaEnum(EstadoConsultaEnum.CANCELADA);
+
+        consultaRepository.save(consulta);
     }
+
+    // --- DASHBOARD MÉDICO: CONSULTAS ATIVAS DO DIA (Problema 2 e 3) ---
+    // Filtra apenas por AGENDADA (some com as REALIZADAS) e ordena por HoraAsc
+    public List<Consulta> listarConsultasAtivasDoDiaPorMedico(Integer idMedico) {
+        return consultaRepository.findByMedicoIdMedicoAndDiaAndEstadoConsultaEnumOrderByHoraAsc(
+                idMedico,
+                LocalDate.now(),
+                EstadoConsultaEnum.AGENDADA
+        );
+    }
+
+    // --- DASHBOARD RECEÇÃO: CONSULTAS ATIVAS DO DIA (Problema 2 e 3) ---
+    // Traz todas as consultas AGENDADAS de hoje da clínica, ordenadas por hora
+    public List<Consulta> listarConsultasAtivasDoDiaRecepcao() {
+        return consultaRepository.findByDiaOrderByHoraAsc(
+                LocalDate.now()
+        );
+    }
+
+    // --- HISTÓRICO: LISTAR TODOS OS PACIENTES (Adicionado para o Problema 3) ---
+    // Alimenta a tabela de pesquisa do Arquivo Geral
+    public List<Paciente> listarTodosPacientes() {
+        return pacienteRepository.findAll();
+    }
+
+    // --- HISTÓRICO: CLINICO DO PACIENTE (Adicionado para o Problema 3) ---
+    // Carrega a linha do tempo de consultas já REALIZADAS por ordem decrescente (da mais recente para a mais antiga)
+    public List<Consulta> listarHistoricoPaciente(Integer idPaciente) {
+        return consultaRepository.findByPacienteIdPacienteAndEstadoConsultaEnum(
+                idPaciente,
+                EstadoConsultaEnum.REALIZADA
+        );
+    }
+
+    // --- ATUALIZAR PRONTUÁRIO E STATUS ---
+    @Transactional
+    public void atualizarNotasEStatus(Integer id, String notas, String estado) {
+        Consulta consulta = consultaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Erro: Consulta não encontrada para atualização."));
+
+        consulta.setNotasMedico(notas);
+        consulta.setEstadoConsultaEnum(EstadoConsultaEnum.valueOf(estado));
+
+        consultaRepository.save(consulta);
+    }
+
+    // --- SALVAR NOTAS TEMPORÁRIAS (Evita perder texto ao adicionar receita) ---
+    @Transactional
+    public void salvarNotasTemporarias(Integer id, String notas) {
+        Consulta consulta = buscarPorId(id);
+        consulta.setNotasMedico(notas);
+        consultaRepository.save(consulta);
+    }
+
 }

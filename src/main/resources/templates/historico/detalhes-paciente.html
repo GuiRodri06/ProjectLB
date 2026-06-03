@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-pt" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Ficha Clínica | Clínica Vitae</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root { --primary: #0f172a; --accent: #0f766e; --bg: #f1f5f9; --border: #e2e8f0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bg); padding: 30px; color: #334155; }
+    .container { max-width: 1100px; margin: auto; }
+
+    /* Cabeçalho do Paciente */
+    .patient-header { background: white; padding: 30px; border-radius: 16px; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--accent); }
+    .patient-info h1 { color: var(--primary); font-size: 24px; font-weight: 700; }
+    .patient-meta { display: flex; gap: 20px; margin-top: 8px; color: #64748b; font-size: 14px; }
+
+    .btn-back { background: #f1f5f9; color: #475569; padding: 10px 16px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border); }
+    .btn-back:hover { background: #e2e8f0; color: var(--primary); }
+
+    /* Histórico Timeline / Cards */
+    .section-title { font-size: 18px; font-weight: 700; color: var(--primary); margin: 30px 0 15px 0; display: flex; align-items: center; gap: 8px; }
+    .history-card { background: white; padding: 25px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); border-left: 4px solid #cbd5e1; }
+    .history-card.completed { border-left-color: #10b981; }
+
+    .card-header { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
+    .consult-date { font-weight: 700; color: var(--primary); }
+    .doctor-name { color: #64748b; font-weight: 500; }
+
+    .medical-notes { background: #f8fafc; padding: 15px; border-radius: 8px; margin-top: 10px; font-size: 14px; line-height: 1.5; color: #475569; border: 1px dashed var(--border); }
+    .prescription-box { background: #f0fdf4; padding: 12px 15px; border-radius: 8px; margin-top: 10px; font-size: 13px; color: #166534; border: 1px solid #bbf7d0; }
+
+    .no-data { background: white; text-align: center; padding: 50px; border-radius: 12px; color: #94a3b8; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="patient-header">
+    <div class="patient-info">
+      <h1 th:text="${paciente.nome}">Nome do Paciente</h1>
+      <div class="patient-meta">
+        <span><i class="fa-solid fa-id-card"></i> <strong>CC:</strong> <span th:text="${paciente.cartaoCidadao}"></span></span>
+        <span><i class="fa-solid fa-hospital-user"></i> <strong>Ficha Nº:</strong> <span th:text="${paciente.idPaciente}"></span></span>
+      </div>
+    </div>
+
+    <div>
+      <a th:href="${backUrl}" class="btn-back">
+        <i class="fa-solid fa-arrow-left"></i> Voltar
+      </a>
+    </div>
+  </div>
+
+  <div class="section-title">
+    <i class="fa-solid fa-clock-rotate-left"></i> Percurso Clínico do Paciente
+  </div>
+
+  <div th:if="${#lists.isEmpty(consultasDoPaciente)}" class="no-data">
+    <i class="fa-regular fa-folder-open" style="font-size: 40px; margin-bottom: 10px; display: block;"></i>
+    <p>Este paciente ainda não possui registos de consultas ou tratamentos no sistema.</p>
+  </div>
+
+  <div th:if="${!#lists.isEmpty(consultasDoPaciente)}">
+    <div th:each="c : ${consultasDoPaciente}" class="history-card completed">
+      <div class="card-header">
+        <div>
+          <span class="consult-date"><i class="fa-regular fa-calendar-check"></i> <span th:text="${c.hora}"></span></span>
+          <span style="margin: 0 8px; color: #cbd5e1;">•</span>
+          <span class="doctor-name"><i class="fa-solid fa-user-doctor"></i> Médico: Dr(a). <span th:text="${c.medico.nome}"></span></span>
+        </div>
+        <div>
+          <span style="background: #e2e8f0; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase;"
+                th:text="${c.categoria != null ? c.categoria.descricao : 'Geral'}"></span>
+        </div>
+      </div>
+
+      <div class="medical-notes">
+        <strong>Diagnóstico / Observações Clínicas:</strong>
+        <p th:text="${c.descricao != null && !c.descricao.isEmpty() ? c.descricao : 'Nenhuma observação clínica registada para esta consulta.'}" style="margin-top: 5px;"></p>
+      </div>
+
+      <div th:if="${c.receita != null}" class="prescription-box">
+        <i class="fa-solid fa-prescription-bottle-medical"></i> <strong>Medicação Prescritada:</strong>
+
+        <ul style="margin-top: 8px; padding-left: 20px;">
+          <li th:each="item : ${c.receita.itens}">
+            <strong th:text="${item.nomeProduto}"></strong>
+            - <span th:text="${item.dosagem}"></span>
+            <br/>
+            <small style="color: #4a7c59;" th:text="'Instruções: ' + ${item.instrucoes_consumo}"></small>
+          </li>
+        </ul>
+
+        <div style="margin-top: 10px; font-size: 12px; font-style: italic;" th:text="'Observações: ' + ${c.receita.observacoes}"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

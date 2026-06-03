@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-pt" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <title>Arquivo de Pacientes | Clínica Vitae</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root { --primary: #0f172a; --accent: #0f766e; --bg: #f1f5f9; --border: #e2e8f0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bg); padding: 30px; color: #334155; }
+    .container { max-width: 1100px; margin: auto; }
+    .header-box { background: white; padding: 25px 30px; border-radius: 16px; margin-bottom: 25px; border-left: 5px solid var(--accent); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; }
+    .header-content { flex: 1; }
+    .main-card { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04); }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { padding: 14px 16px; text-align: left; font-size: 14px; }
+    th { background: #f8fafc; color: #64748b; font-weight: 600; border-bottom: 2px solid var(--border); text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+    td { border-bottom: 1px solid var(--border); }
+    tr:hover td { background-color: #f8fafc; }
+    .btn-ver { background: var(--accent); color: white; padding: 8px 14px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-ver:hover { background: #115e59; }
+    .btn-back { background: #f1f5f9; color: #475569; padding: 10px 16px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border); }
+    .btn-back:hover { background: #e2e8f0; color: var(--primary); }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header-box">
+    <div class="header-content">
+      <h1 style="font-size: 22px; color: var(--primary);"><i class="fa-solid fa-box-archive"></i> Arquivo Clínico Geral</h1>
+      <p style="color: #64748b; font-size: 14px; margin-top: 4px;">Selecione um paciente para visualizar o histórico completo de consultas e receitas emitidas.</p>
+    </div>
+
+    <div style="margin-left: 20px; white-space: nowrap;">
+      <a th:href="${backUrl}" class="btn-back">
+        <i class="fa-solid fa-arrow-left"></i> Voltar
+      </a>
+    </div>
+  </div>
+
+  <div class="main-card">
+    <table>
+      <thead>
+      <tr>
+        <th style="width: 50%;">Nome do Paciente</th>
+        <th style="width: 30%;">Cartão de Cidadão (CC)</th>
+        <th style="width: 20%; text-align: right;">Ação</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="p : ${pacientes}">
+        <td th:text="${p.nome}" style="font-weight: 600; color: var(--primary);"></td>
+        <td th:text="${p.cartaoCidadao}"></td>
+        <td style="text-align: right;">
+          <a th:href="@{/historico/detalhes/{id}(id=${p.idPaciente})}" class="btn-ver">
+            <i class="fa-regular fa-folder-open"></i> Ver Ficha Clínica
+          </a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

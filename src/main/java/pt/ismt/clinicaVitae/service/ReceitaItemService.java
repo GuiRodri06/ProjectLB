@@ -44,7 +44,7 @@ public class ReceitaItemService {
 
         // Atualiza apenas o que é permitido mudar na prescrição
         itemExistente.setDosagem(dadosNovos.getDosagem());
-        itemExistente.setInstrucoes(dadosNovos.getInstrucoes());
+        itemExistente.setInstrucoes_consumo(dadosNovos.getInstrucoes_consumo());
 
         return repository.save(itemExistente);
     }

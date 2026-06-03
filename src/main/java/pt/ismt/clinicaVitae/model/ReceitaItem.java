@@ -23,7 +23,7 @@ public class ReceitaItem {
     private String nomeProduto;
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String instrucoes;
+    private String instrucoes_consumo;
 
     // Relacionamento com a Receita pai
     @ManyToOne(fetch = FetchType.LAZY)

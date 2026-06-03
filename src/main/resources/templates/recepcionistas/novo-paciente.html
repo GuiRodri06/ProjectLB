@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registar Paciente | Clinica Vitae</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root { --primary: #0f172a; --accent: #0ea5e9; --bg: #f8fafc; --border: #cbd5e1; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); padding: 40px; display: flex; justify-content: center; }
+
+        .container { background: white; padding: 40px; border-radius: 16px; width: 100%; max-width: 700px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+        h1 { font-size: 24px; color: var(--primary); margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+        .full-width { grid-column: span 2; }
+
+        label { display: block; font-size: 14px; font-weight: 600; color: #475569; margin-bottom: 8px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 15px; transition: border 0.2s; }
+        input:focus, select:focus { outline: none; border-color: var(--accent); }
+
+        .actions { display: flex; justify-content: flex-end; gap: 15px; }
+        .btn { padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 15px; border: none; }
+        .btn-cancel { background: #e2e8f0; color: #475569; }
+        .btn-submit { background: var(--accent); color: white; }
+        .btn-submit:hover { background: #0284c7; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1><i class="fa-solid fa-user-plus" style="color: var(--accent);"></i> Registar Novo Paciente</h1>
+
+    <form th:action="@{/pacientes/salvar}" th:object="${paciente}" method="POST">
+
+        <div class="form-grid">
+
+            <div class="full-width">
+                <label for="nome">Nome Completo</label>
+                <input type="text" id="nome" th:field="*{nome}" placeholder="Ex: João Silva" required>
+            </div>
+
+            <div>
+                <label for="email">E-mail</label>
+                <input type="email" id="email" th:field="*{email}" placeholder="joao@example.com" required>
+            </div>
+
+            <div>
+                <label for="telemovel">Telemóvel (9 dígitos)</label>
+                <input type="text" id="telemovel" th:field="*{telemovel}" maxlength="9" placeholder="912345678" required>
+            </div>
+
+            <div>
+                <label for="cc">Cartão de Cidadão (8 ou 9 dígitos)</label>
+                <input type="text" id="cc" th:field="*{cartaoCidadao}" maxlength="9" placeholder="12345678" required>
+            </div>
+
+            <div>
+                <label for="dataNascimento">Data de Nascimento</label>
+                <input type="date" id="dataNascimento" th:field="*{dataNascimento}" required>
+            </div>
+
+            <div>
+                <label for="genero">Género</label>
+                <select id="genero" th:field="*{genero}" required>
+                    <option value="">Selecione...</option>
+                    <option th:each="g : ${generos}" th:value="${g}" th:text="${g}"></option>
+                </select>
+            </div>
+
+            <div>
+                <label for="nacionalidade">Nacionalidade</label>
+                <input type="text" id="nacionalidade" th:field="*{nacionalidade}" placeholder="Portuguesa" required>
+            </div>
+
+            <div>
+                <label for="peso">Peso (kg)</label>
+                <input type="number" step="0.1" id="peso" th:field="*{peso}" placeholder="70.5" required>
+            </div>
+
+            <div>
+                <label for="altura">Altura (m)</label>
+                <input type="number" step="0.01" id="altura" th:field="*{altura}" placeholder="1.75" required>
+            </div>
+
+            <div class="full-width">
+                <label for="morada">Morada Completa</label>
+                <input type="text" id="morada" th:field="*{morada}" placeholder="Rua de Baixo, Nº 12, Coimbra" required>
+            </div>
+
+        </div>
+
+        <div class="actions">
+            <a href="/recepcionistas/dashboard" class="btn btn-cancel">Cancelar</a>
+            <button type="submit" class="btn btn-submit">Gravar Paciente</button>
+        </div>
+
+    </form>
+</div>
+
+</body>
+</html>
