@@ -22,10 +22,11 @@ public class ReceitaItemService {
     // --- ADICIONAR UM ITEM A UMA RECEITA JÁ EXISTENTE ---
     @Transactional
     public ReceitaItem adicionarItem(Integer idReceita, ReceitaItem novoItem) {
+        // Carrega a receita principal (mãe)
         Receita receita = receitaRepository.findById(idReceita)
                 .orElseThrow(() -> new RuntimeException("Receita não encontrada."));
 
-        // Vincula o item à receita "mãe"
+        // Cria o vínculo de Chave Estrangeira: faz o item apontar para a receita correta
         novoItem.setReceita(receita);
 
         return repository.save(novoItem);
@@ -42,7 +43,7 @@ public class ReceitaItemService {
         ReceitaItem itemExistente = repository.findById(idItem)
                 .orElseThrow(() -> new RuntimeException("Medicamento não encontrado na receita."));
 
-        // Atualiza apenas o que é permitido mudar na prescrição
+        // Altera apenas os campos textuais de posologia permitidos pelo sistema
         itemExistente.setDosagem(dadosNovos.getDosagem());
         itemExistente.setInstrucoes_consumo(dadosNovos.getInstrucoes_consumo());
 
@@ -55,6 +56,7 @@ public class ReceitaItemService {
         if (!repository.existsById(idItem)) {
             throw new RuntimeException("Erro: Medicamento não encontrado.");
         }
+        // Apaga apenas a linha deste remédio específico sem afetar o resto da receita
         repository.deleteById(idItem);
     }
 }

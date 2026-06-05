@@ -22,25 +22,33 @@ public class MedicoController {
     @Autowired
     private ConsultaService consultaService;
 
-    // --- DASHBOARD INTEGRADO COM SPRING SECURITY ---
+    // --- PAINEL CLÍNICO / DASHBOARD MÉDICO ---
     @GetMapping("/dashboard")
     public String exibirDashboard(Model model, @AuthenticationPrincipal Medico medicoLogado) {
-        // Segurança: Pegamos o ID diretamente do token/sessão do utilizador autenticado
+        // Extrai com segurança o ID do utilizador autenticado diretamente do contexto da sessão/token JWT
         Integer idMedico = medicoLogado.getIdMedico();
 
-        // Filtramos as consultas do dia APENAS para este médico
+        // Filtra a agenda trazendo unicamente as consultas ativas marcadas para HOJE destinadas a este clínico
         List<Consulta> consultasDoDia = consultaService.listarConsultasAtivasDoDiaPorMedico(idMedico);
 
+        // Disponibiliza as listas no ecrã para renderização no Thymeleaf
         model.addAttribute("medico", medicoLogado);
         model.addAttribute("consultas", consultasDoDia);
 
-        return "medicos/dashboard";
+        return "medicos/dashboard"; // templates/medicos/dashboard.html
     }
 
-    // --- ROTAS DE API (REST) CONTINUAM IGUAIS ---
+    // --- ENPOINTS DA API REST DE SUPORTE (JSON) ---
+
     @PostMapping(consumes = "application/json")
-    @ResponseBody
-    public Medico cadastrar(@RequestBody Medico medico) {
+    @ResponseBody // Indica que o retorno será JSON puro e não um ficheiro HTML
+    public Medico salvar(@RequestBody Medico medico) {
         return serviceMedico.salvar(medico);
+    }
+
+    @GetMapping(produces = "application/json")
+    @ResponseBody
+    public List<Medico> listarTodos() {
+        return serviceMedico.listarTodos();
     }
 }

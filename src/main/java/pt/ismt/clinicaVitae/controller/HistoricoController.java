@@ -15,7 +15,7 @@ import pt.ismt.clinicaVitae.service.ConsultaService;
 import java.util.List;
 
 @Controller
-@RequestMapping("/historico")
+@RequestMapping("/historico") // Concentra o módulo do Arquivo Clínico Geral da clínica
 public class HistoricoController {
 
     @Autowired
@@ -25,7 +25,8 @@ public class HistoricoController {
     private PacienteRepository pacienteRepository;
 
     /**
-     * Método auxiliar para determinar a URL de volta conforme o role do utilizador
+     * MÉTODOS AUXILIARES (Lógica Dinâmica de Interface):
+     * Identifica se quem está a navegar é um MÉDICO ou RECEPCIONISTA para renderizar o botão "Voltar" correto.
      */
     private String determinarBackUrl(Authentication authentication) {
         return authentication.getAuthorities().stream()
@@ -35,36 +36,36 @@ public class HistoricoController {
     }
 
     /**
-     * Ecrã 1: Lista todos os pacientes do sistema
+     * Ecrã 1: Arquivo de Fichas - Lista todos os utentes registados na aplicação
      */
     @GetMapping("/pacientes")
     public String listaPacientes(Model model, Authentication authentication) {
+        // Popula a tabela com todos os dados dos pacientes
         model.addAttribute("pacientes", consultaService.listarTodosPacientes());
 
-        // Adicionar URL de volta conforme o role
+        // Injeta a rota dinâmica de retorno baseado nas permissões de segurança
         String backUrl = determinarBackUrl(authentication);
         model.addAttribute("backUrl", backUrl);
 
-        return "historico/lista-pacientes";
+        return "historico/lista-pacientes"; // templates/historico/lista-pacientes.html
     }
 
     /**
-     * Ecrã 2: Ficha Clínica com a linha do tempo de consultas do paciente
+     * Ecrã 2: Linha Temporal do Paciente - Mostra dados vitais e todas as consultas REALIZADAS (passadas)
      */
     @GetMapping("/detalhes/{id}")
     public String verDetalhesPaciente(@PathVariable("id") Integer id, Model model, Authentication authentication) {
-        // 1. Procura o paciente
+        // 1. Localiza a ficha cadastral do paciente ou falha se não existir
         Paciente paciente = pacienteRepository.findById(id).orElseThrow();
         model.addAttribute("paciente", paciente);
 
-        // 2. Procura as consultas deste paciente
-        // Garante que usas o método do teu ConsultaRepository que filtra pelo ID do paciente
+        // 2. Extrai unicamente o histórico clínico (consultas passadas, diagnósticos e receitas antigas)
         List<Consulta> listaDeConsultas = consultaService.listarHistoricoPaciente(id);
         model.addAttribute("consultasDoPaciente", listaDeConsultas);
 
-        // 3. Adicionar URL de volta (volta sempre para o arquivo/lista de pacientes)
+        // 3. Define a navegação de retorno (volta sempre para a listagem do arquivo geral)
         model.addAttribute("backUrl", "/historico/pacientes");
 
-        return "historico/detalhes-paciente";
+        return "historico/detalhes-paciente"; // templates/historico/detalhes-paciente.html
     }
 }

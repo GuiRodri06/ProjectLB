@@ -17,10 +17,6 @@ public interface PacienteRepository extends JpaRepository<Paciente, Integer> {
 
     Optional<Paciente> findByEmail(String email);
 
-    // 2. Buscas por Texto (Usamos ContainingIgnoreCase para ser mais flexível)
-    List<Paciente> findByNomeContainingIgnoreCase(String nome);
-
-    // 3. Outros filtros (Devem bater com o nome da variável no Model)
     List<Paciente> findByTelemovel(String telemovel);
 
     List<Paciente> findByDataNascimento(LocalDate dataNascimento);

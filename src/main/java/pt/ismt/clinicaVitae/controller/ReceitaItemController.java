@@ -10,14 +10,13 @@ import pt.ismt.clinicaVitae.service.ReceitaItemService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/receita-itens") // URL Base: {{url}}/receita-itens
+@RequestMapping("/receita-itens") // URL Base: /receita-itens
 public class ReceitaItemController {
 
     @Autowired
     private ReceitaItemService receitaItemService;
 
-    // --- ADICIONAR MAIS UM REMÉDIO A UMA RECEITA JÁ EXISTENTE (POST) ---
-    // Ex: {{url}}/receita-itens/receita/1
+    // --- ADICIONAR UM MEDICAMENTO A UMA RECEITA JÁ ABERTA (POST API) ---
     @PostMapping("/receita/{idReceita}")
     public ResponseEntity<?> adicionarItem(@PathVariable Integer idReceita, @RequestBody ReceitaItem novoItem) {
         try {
@@ -28,15 +27,14 @@ public class ReceitaItemController {
         }
     }
 
-    // --- LISTAR TODOS OS REMÉDIOS DE UMA RECEITA (GET) ---
+    // --- EXTRAIR TODOS OS MEDICAMENTOS PRESCRITOS NA RECEITA (GET) ---
     @GetMapping("/receita/{idReceita}")
     public ResponseEntity<List<ReceitaItem>> listarPorReceita(@PathVariable Integer idReceita) {
         List<ReceitaItem> itens = receitaItemService.listarPorReceita(idReceita);
         return ResponseEntity.ok(itens);
     }
 
-    // --- ALTERAR A DOSAGEM DE UM REMÉDIO ESPECÍFICO (PUT) ---
-    // Ex: {{url}}/receita-itens/1
+    // --- ATUALIZAR MODALIDADE DE CONSUMO / DOSAGEM (PUT) ---
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizarItem(@PathVariable Integer id, @RequestBody ReceitaItem dadosNovos) {
         try {
@@ -47,7 +45,7 @@ public class ReceitaItemController {
         }
     }
 
-    // --- DELETAR APENAS UM REMÉDIO DA RECEITA (DELETE) ---
+    // --- EXCLUIR MEDICAMENTO INDIVIDUAL DA RECEITA (DELETE) ---
     @DeleteMapping("/{id}")
     public ResponseEntity<String> removerItem(@PathVariable Integer id) {
         try {

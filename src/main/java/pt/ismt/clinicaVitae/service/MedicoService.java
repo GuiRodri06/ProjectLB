@@ -16,33 +16,38 @@ public class MedicoService {
     private MedicoRepository medicoRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder; // Injetando o encoder
+    private PasswordEncoder passwordEncoder; // Injeta o codificador BCrypt configurado na segurança da aplicação
 
+    // --- CADASTRAR MÉDICO ---
+    @Transactional
     public Medico salvar(Medico medico) {
-        // Regra: Não permitir emails duplicados
+        // Regra de Negócio: Impede a duplicação de e-mails para garantir logins únicos
         if (medicoRepository.findByEmail(medico.getEmail()).isPresent()) {
             throw new RuntimeException("Este e-mail já está sendo usado por outro médico.");
         }
 
-        // CRÍTICO: Criptografar a senha antes de salvar
+        // SEGURANÇA: Transforma a senha em texto limpo num Hash criptográfico BCrypt antes de salvar
         String senhaCriptografada = passwordEncoder.encode(medico.getSenha());
         medico.setSenha(senhaCriptografada);
 
         return medicoRepository.save(medico);
     }
 
+    // --- LISTAR TODOS ---
     public List<Medico> listarTodos() {
         return medicoRepository.findAll();
     }
 
+    // --- BUSCAR POR ID ---
     public Optional<Medico> buscarPorId(Integer id) {
         return medicoRepository.findById(id);
     }
 
+    // --- REMOVER MÉDICO ---
     @Transactional
     public void excluir(Integer id) {
+        // Validação preventiva para lançar uma exceção amigável caso o registo não exista
         if (!medicoRepository.existsById(id)) {
-            // Nota: Corrigi a mensagem de "Paciente" para "Médico"
             throw new RuntimeException("Médico não encontrado para exclusão!");
         }
         medicoRepository.deleteById(id);

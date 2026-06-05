@@ -9,16 +9,16 @@ import pt.ismt.clinicaVitae.repository.PacienteRepository;
 import java.util.List;
 import java.util.Optional;
 
-@Service // Avisa ao Spring que esta é a camada de lógica
+@Service // Avisa ao Spring que esta é a camada de lógica e regras de negócio do Paciente
 public class PacienteService {
 
     @Autowired
     private PacienteRepository pacienteRepository;
 
-    // --- FUNÇÃO DE CREATE (CRIAR) ---
-    @Transactional // Garante que, se der erro no banco, nada seja salvo pela metade
+    // --- CADASTRAR PACIENTE ---
+    @Transactional // Executa de forma transacional para assegurar a integridade dos dados no banco
     public Paciente salvar(Paciente paciente) {
-        // Regra de negócio: não cadastrar se o CC já existir
+        // Regra de negócio: Garante a unicidade do paciente através do Cartão de Cidadão (CC)
         Optional<Paciente> jaExiste = pacienteRepository.findByCartaoCidadao(paciente.getCartaoCidadao());
         if (jaExiste.isPresent()) {
             throw new RuntimeException("Já existe um paciente cadastrado com este Cartão de Cidadão!");
@@ -26,16 +26,17 @@ public class PacienteService {
         return pacienteRepository.save(paciente);
     }
 
-    // --- FUNÇÃO DE READ (LER) ---
+    // --- LISTAR TODOS ---
     public List<Paciente> listarTodos() {
         return pacienteRepository.findAll();
     }
 
+    // --- BUSCAR POR ID ---
     public Optional<Paciente> buscarPorId(Integer id) {
         return pacienteRepository.findById(id);
     }
 
-    // --- FUNÇÃO DE DELETE (APAGAR) ---
+    // --- REMOVER PACIENTE ---
     @Transactional
     public void excluir(Integer id) {
         if (!pacienteRepository.existsById(id)) {

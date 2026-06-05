@@ -15,15 +15,18 @@ public class RecepcionistaService {
 
     @Autowired
     private RecepcionistaRepository repository;
-    @Autowired
-    private PasswordEncoder passwordEncoder; // Injeção importante
 
+    @Autowired
+    private PasswordEncoder passwordEncoder; // Injeta o codificador de senhas (BCrypt)
+
+    // --- REGISTAR RECEPCIONISTA ---
     @Transactional
     public Recepcionista salvar(Recepcionista recepcionista) {
+        // Validação: Garante que o e-mail corporativo de login seja exclusivo
         if (repository.findByEmail(recepcionista.getEmail()).isPresent()) {
             throw new RuntimeException("Este e-mail já está cadastrado!");
         }
-        // Criptografa a senha antes de salvar
+        // Encripta a credencial de segurança antes do armazenamento
         recepcionista.setPassword(passwordEncoder.encode(recepcionista.getPassword()));
         return repository.save(recepcionista);
     }
@@ -33,23 +36,24 @@ public class RecepcionistaService {
         return repository.findAll();
     }
 
+    // --- BUSCAR POR ID ---
     public Optional<Recepcionista> buscarPorId(Integer id) {
         return repository.findById(id);
     }
 
-
-    //DEPOIS ANALISAR ESSE BLOCO
-
+    // --- ATUALIZAR PERFIL ---
     @Transactional
     public Recepcionista atualizar(Integer id, Recepcionista dadosAtualizados) {
         Recepcionista r = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Recepcionista não encontrado."));
 
+        // Copia os novos dados básicos enviados pela interface
         r.setNome(dadosAtualizados.getNome());
         r.setEmail(dadosAtualizados.getEmail());
         r.setTelemovel(dadosAtualizados.getTelemovel());
 
-        // Se uma nova senha foi enviada, criptografe-a antes de atualizar
+        // Regra Opcional: Se o utilizador preencheu o campo de senha no formulário,
+        // significa que quer alterá-la. Então encripta-se a nova senha.
         if (dadosAtualizados.getPassword() != null && !dadosAtualizados.getPassword().isEmpty()) {
             r.setPassword(passwordEncoder.encode(dadosAtualizados.getPassword()));
         }
@@ -57,7 +61,7 @@ public class RecepcionistaService {
         return repository.save(r);
     }
 
-    // --- EXCLUIR ---
+    // --- REMOVER COLABORADOR ---
     @Transactional
     public void excluir(Integer id) {
         if (!repository.existsById(id)) {

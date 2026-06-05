@@ -20,34 +20,32 @@ public class ReceitaService {
     @Autowired
     private ConsultaRepository consultaRepository;
 
-    // A Injeção do ReceitaItemRepository não é obrigatória aqui para salvar,
-    // pois o CascadeType.ALL na entidade Receita fará o salvamento automático dos itens.
-
     // --- EMITIR NOVA RECEITA ---
-    @Transactional // Se der erro em um medicamento, nada da receita é salvo.
+    @Transactional // Se a inserção de algum item falhar, a receita completa sofre Rollback
     public Receita emitirReceita(Integer idConsulta, Receita receita) {
 
-        // 1. Validar se a consulta existe
+        // 1. Validação: Uma receita precisa obrigatoriamente estar atrelada a uma consulta real
         Consulta consulta = consultaRepository.findById(idConsulta)
                 .orElseThrow(() -> new RuntimeException("Erro: Consulta não encontrada. Não é possível emitir receita sem uma consulta."));
 
-        // 2. Validar se a consulta já possui uma receita (1 para 1)
+        // 2. Regra de Negócio (1 para 1): Uma consulta não pode ter duas receitas diferentes emitidas
         if (receitaRepository.findByConsultaIdConsulta(idConsulta).isPresent()) {
             throw new RuntimeException("Erro: Esta consulta já possui uma receita emitida!");
         }
 
-        // 3. Vincular a Receita à Consulta
+        // 3. Vincula a entidade Receita à Consulta recuperada
         receita.setConsulta(consulta);
 
-        // 4. O Pulo do Gato (Bidirecionalidade):
-        // Garantir que CADA medicamento da lista saiba a qual receita pertence
+        // 4. Mecanismo de Bidirecionalidade do JPA/Hibernate:
+        // Percorre a lista de medicamentos e faz com que cada item conheça a receita "mãe".
+        // Isto é fundamental para que as chaves estrangeiras não fiquem nulas na tabela ReceitaItem.
         if (receita.getItens() != null && !receita.getItens().isEmpty()) {
             for (ReceitaItem item : receita.getItens()) {
-                item.setReceita(receita); // O item "aponta" para a mãe (Receita)
+                item.setReceita(receita); // Vincula o filho ao pai
             }
         }
 
-        // 5. Salvar (Isso salva a Receita E os ReceitaItems automaticamente por causa do Cascade)
+        // 5. Salva a Receita. O CascadeType.ALL na entidade tratará de salvar a lista de itens em simultâneo.
         return receitaRepository.save(receita);
     }
 
@@ -63,13 +61,14 @@ public class ReceitaService {
                 .orElseThrow(() -> new RuntimeException("Receita não encontrada."));
     }
 
-    // --- DELETAR ---
+    // --- REMOVER RECEITA ---
     @Transactional
     public void excluir(Integer id) {
         if (!receitaRepository.existsById(id)) {
             throw new RuntimeException("Impossível excluir: Receita não encontrada.");
         }
-        // Ao deletar a Receita, o JPA também deletará todos os ReceitaItems vinculados a ela!
+        // Devido à propriedade 'cascade = CascadeType.ALL', ao apagar a receita pai,
+        // todos os itens/medicamentos associados na base de dados são automaticamente removidos em cascata.
         receitaRepository.deleteById(id);
     }
 }
