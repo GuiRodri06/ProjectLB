@@ -4,7 +4,10 @@ public enum CategoriaEnum {
     ROTINA("Rotina"),
     CHECK_UP("Check-up"),
     URGENCIA("Urgência"),
-    RETORNO("Retorno");
+    RETORNO("Retorno"),
+    ESPECIALIDADE("Consulta de Especialidade"),
+    EXAME("Realização de Exames"),
+    TELECONSULTA("Teleconsulta");
 
     private final String descricao;
 
